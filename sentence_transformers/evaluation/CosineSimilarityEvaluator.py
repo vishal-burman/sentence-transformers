@@ -47,7 +47,7 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         cosine_similarity = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
 
         logger.info("Cosine Similarity evaluation (lower = better) on "+self.name+" dataset"+out_txt)
-        logger.info(f"Cosine Similarity: {cosine_distance: .4f}")
+        logger.info(f"Cosine Similarity: {cosine_similarity: .4f}")
 
         if output_path is not None and self.write_csv:
             csv_path = os.path.join(output_path, self.csv_file)
