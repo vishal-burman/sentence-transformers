@@ -1,5 +1,5 @@
 from sentence_transformers.evaluation import SentenceEvaluator
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import paired_cosine_distances
 import numpy as np
 import logging
 import os
@@ -44,7 +44,8 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
 
         target_embeddings = model.encode(self.target_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
 
-        cs = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
+        #cs = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
+        cs = (1 - paired_cosine_distances(self.source_embeddings, target_embeddings)).mean()
 
         logger.info("Cosine Similarity evaluation (lower = better) on "+self.name+" dataset"+out_txt)
         logger.info(f"Cosine Similarity: {cs: .4f}")
