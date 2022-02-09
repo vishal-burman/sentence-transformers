@@ -678,6 +678,8 @@ class SentenceTransformer(nn.Sequential):
                 loss_model.zero_grad()
                 loss_model.train()
 
+            loss_list = []
+
             for _ in trange(steps_per_epoch, desc="Iteration", smoothing=0.05, disable=not show_progress_bar):
                 for train_idx in range(num_train_objectives):
                     loss_model = loss_models[train_idx]
@@ -699,6 +701,7 @@ class SentenceTransformer(nn.Sequential):
                     if use_amp:
                         with autocast():
                             loss_value = loss_model(features, labels)
+                            loss_list.append(loss_value.item())
 
                         scale_before_step = scaler.get_scale()
                         scaler.scale(loss_value).backward()
@@ -710,6 +713,7 @@ class SentenceTransformer(nn.Sequential):
                         skip_scheduler = scaler.get_scale() != scale_before_step
                     else:
                         loss_value = loss_model(features, labels)
+                        loss_list.append(loss_value.item())
                         loss_value.backward()
                         torch.nn.utils.clip_grad_norm_(loss_model.parameters(), max_grad_norm)
                         optimizer.step()
@@ -733,6 +737,7 @@ class SentenceTransformer(nn.Sequential):
                     self._save_checkpoint(checkpoint_path, checkpoint_save_total_limit, global_step)
 
 
+            print(f"Training Loss: {np.mean(loss_list): .4f}")
             self._eval_during_training(evaluator, output_path, save_best_model, epoch, -1, callback)
 
         if evaluator is None and output_path is not None:   #No evaluator, but output path: save final model version
