@@ -22,8 +22,8 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
     """
 
     def __init__(self, source_sentences: List[str], target_sentences: List[str], teacher_model = None, show_progress_bar: bool = False, batch_size: int = 32, name: str = '', write_csv: bool = True):
-        self.source_embeddings = teacher_model.encode(source_sentences, show_progress_bar=show_progress_bar, batch_size=batch_size, convert_to_numpy=True)
 
+        self.source_sentences = source_sentences
         self.target_sentences = target_sentences
         self.show_progress_bar = show_progress_bar
         self.batch_size = batch_size
@@ -42,10 +42,11 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         else:
             out_txt = ":"
 
+        source_embeddings = model.encode(self.source_sentences, show_progress_bar=self.show_progress_bar, batch_size=batch_size, convert_to_numpy=True)
         target_embeddings = model.encode(self.target_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
 
         #cs = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
-        cs = (1 - paired_cosine_distances(self.source_embeddings, target_embeddings)).mean()
+        cs = (1 - paired_cosine_distances(source_embeddings, target_embeddings)).mean()
 
         logger.info("Cosine Similarity evaluation (lower = better) on "+self.name+" dataset"+out_txt)
         logger.info(f"Cosine Similarity: {cs: .4f}")
@@ -60,4 +61,4 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
 
                 writer.writerow([epoch, steps, cs])
 
-        return cs #Return negative score as SentenceTransformers maximizes the performance
+        return cs
