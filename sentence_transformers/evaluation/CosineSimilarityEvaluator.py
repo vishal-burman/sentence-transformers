@@ -44,10 +44,10 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
 
         target_embeddings = model.encode(self.target_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
 
-        cosine_similarity = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
+        cs = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
 
         logger.info("Cosine Similarity evaluation (lower = better) on "+self.name+" dataset"+out_txt)
-        logger.info(f"Cosine Similarity: {cosine_similarity: .4f}")
+        logger.info(f"Cosine Similarity: {cs: .4f}")
 
         if output_path is not None and self.write_csv:
             csv_path = os.path.join(output_path, self.csv_file)
@@ -57,6 +57,6 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
                 if not output_file_exists:
                     writer.writerow(self.csv_headers)
 
-                writer.writerow([epoch, steps, cosine_similarity])
+                writer.writerow([epoch, steps, cs])
 
-        return cosine_similarity #Return negative score as SentenceTransformers maximizes the performance
+        return cs #Return negative score as SentenceTransformers maximizes the performance
