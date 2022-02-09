@@ -42,7 +42,7 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         else:
             out_txt = ":"
 
-        source_embeddings = model.encode(self.source_sentences, show_progress_bar=self.show_progress_bar, batch_size=batch_size, convert_to_numpy=True)
+        source_embeddings = model.encode(self.source_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
         target_embeddings = model.encode(self.target_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
 
         #cs = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
