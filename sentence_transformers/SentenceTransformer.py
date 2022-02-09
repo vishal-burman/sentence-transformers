@@ -730,7 +730,7 @@ class SentenceTransformer(nn.Sequential):
                     self._save_checkpoint(checkpoint_path, checkpoint_save_total_limit, global_step)
 
 
-            print(f"Training Loss: {np.mean(loss_list)}")
+            print(f"Training Loss: {np.mean(loss_list): .4f}")
             self._eval_during_training(evaluator, output_path, save_best_model, epoch, -1, callback)
 
         if evaluator is None and output_path is not None:   #No evaluator, but output path: save final model version
