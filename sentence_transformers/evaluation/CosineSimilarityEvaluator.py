@@ -12,7 +12,7 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
     """
     Computes the Cosine-Similarity between the computed sentence embedding
     and some target sentence embedding.
-    The CosineSimilarity is computed between ||teacher.encode(source_sentences) - student.encode(target_sentences)||.
+    The CosineSimilarity is computed between student.encode(source_sentences) and student.encode(target_sentences)
     :param source_sentences: Source sentences are embedded with the teacher model
     :param target_sentences: Target sentences are ambedding with the student model.
     :param show_progress_bar: Show progress bar when computing embeddings
@@ -21,7 +21,7 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
     :param write_csv: Write results to CSV file
     """
 
-    def __init__(self, source_sentences: List[str], target_sentences: List[str], teacher_model = None, show_progress_bar: bool = False, batch_size: int = 32, name: str = '', write_csv: bool = True):
+    def __init__(self, source_sentences: List[str], target_sentences: List[str], show_progress_bar: bool = False, batch_size: int = 32, name: str = '', write_csv: bool = True):
 
         self.source_sentences = source_sentences
         self.target_sentences = target_sentences
@@ -45,7 +45,6 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         source_embeddings = model.encode(self.source_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
         target_embeddings = model.encode(self.target_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
 
-        #cs = cosine_similarity(self.source_embeddings, target_embeddings).diagonal().mean()
         cs = (1 - paired_cosine_distances(source_embeddings, target_embeddings)).mean()
 
         logger.info("Cosine Similarity evaluation (lower = better) on "+self.name+" dataset"+out_txt)
