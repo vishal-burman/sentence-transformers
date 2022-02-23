@@ -1,5 +1,5 @@
 from sentence_transformers.evaluation import SentenceEvaluator
-from sklearn.metrics.pairwise import paired_cosine_distances
+from sklearn.metrics.pairwise import paired_cosine_distances, paired_manhattan_distances, paired_euclidean_distances
 import numpy as np
 import logging
 import os
@@ -30,7 +30,7 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         self.name = name
 
         self.csv_file = "cosine_similarity_evaluation_" + name + "_results.csv"
-        self.csv_headers = ["epoch", "steps", "Cosine Similarity"]
+        self.csv_headers = ["epoch", "steps", "Avg. Cosine Similarity", "Avg. Manhattan Distance", "Avg. Euclidean Distance"]
         self.write_csv = write_csv
 
     def __call__(self, model, output_path, epoch  = -1, steps = -1):
@@ -46,9 +46,17 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         target_embeddings = model.encode(self.target_sentences, show_progress_bar=self.show_progress_bar, batch_size=self.batch_size, convert_to_numpy=True)
 
         cs = (1 - paired_cosine_distances(source_embeddings, target_embeddings)).mean()
+        md = -paired_manhattan_distances(source_embeddings, target_embeddings).mean()
+        ed = -paired_euclidean_distances(source_embeddings, target_embeddings).mean()
 
         logger.info("Cosine Similarity evaluation (higher = better) on "+self.name+" dataset"+out_txt)
         logger.info(f"Cosine Similarity: {cs: .4f}")
+
+        logger.info("Manhattan Distance evaluation (higher = better) on "+self.name"+ dataset"+out_txt)
+        logger.info(f"Manhattan Distance: {md: .4f")
+
+        logger.info("Euclidean Distance evaluation (higher = better) on "+self.name"+ dataset"+out_txt)
+        logger.info(f"Euclidean Distance: {ed: .4f")
 
         if output_path is not None and self.write_csv:
             csv_path = os.path.join(output_path, self.csv_file)
@@ -58,6 +66,6 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
                 if not output_file_exists:
                     writer.writerow(self.csv_headers)
 
-                writer.writerow([epoch, steps, cs])
+                writer.writerow([epoch, steps, cs, md, ed])
 
         return cs
