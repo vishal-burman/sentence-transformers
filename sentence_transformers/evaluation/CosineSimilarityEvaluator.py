@@ -53,10 +53,10 @@ class CosineSimilarityEvaluator(SentenceEvaluator):
         logger.info(f"Cosine Similarity: {cs: .4f}")
 
         logger.info("Manhattan Distance evaluation (higher = better) on "+self.name+" dataset"+out_txt)
-        logger.info(f"Manhattan Distance: {md: .4f")
+        logger.info(f"Manhattan Distance: {md: .4f}")
 
         logger.info("Euclidean Distance evaluation (higher = better) on "+self.name+" dataset"+out_txt)
-        logger.info(f"Euclidean Distance: {ed: .4f")
+        logger.info(f"Euclidean Distance: {ed: .4f}")
 
         if output_path is not None and self.write_csv:
             csv_path = os.path.join(output_path, self.csv_file)
